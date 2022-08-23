@@ -1,10 +1,11 @@
 import requests
 
+from typing import Union
 from time import sleep
 
 
 # Requisito 1
-def fetch(url: str):
+def fetch(url: str) -> Union[str, None]:
     try:
         response = requests.get(
             url, timeout=3, headers={"user-agent": "Fake user-agent"}
