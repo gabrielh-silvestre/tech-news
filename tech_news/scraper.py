@@ -3,6 +3,7 @@ import requests
 from typing import List, Union
 from time import sleep
 from parsel import Selector
+from datetime import datetime
 
 
 def select_links(
@@ -47,8 +48,54 @@ def scrape_next_page_link(html_content: str) -> Union[str, None]:
 
 
 # Requisito 4
-def scrape_noticia(html_content):
-    """Seu código deve vir aqui"""
+def scrape_noticia(html_content: str):
+    MAPPED_FIELDS = {
+        "url": "link[rel=canonical]",
+        "title": "h1.entry-title",
+        "timestamp_original": "li.meta-date",
+        "timestamp_modified": "p.post-modified-info",
+        "writer": "a.fn",
+        "comments_count": "ol.comment-list > li",
+        "summary": "div.entry-content > p:nth-of-type(1)",
+        "tags": "section.post-tags > ul > li > a",
+        "category": "a.category-style > span.label",
+    }
+
+    parsed_content = Selector(text=html_content)
+
+    url = parsed_content.css(f"{MAPPED_FIELDS['url']}::attr(href)").get()
+    title = parsed_content.css(f"{MAPPED_FIELDS['title']}::text").get()
+    writer = parsed_content.css(f"{MAPPED_FIELDS['writer']}::text").get()
+    tags = parsed_content.css(f"{MAPPED_FIELDS['tags']}::text").getall()
+    category = parsed_content.css(f"{MAPPED_FIELDS['category']}::text").get()
+    comments_count = parsed_content.css(
+        MAPPED_FIELDS["comments_count"]
+    ).getall()
+    summary = parsed_content.css(
+        f"{MAPPED_FIELDS['summary']} *::text"
+    ).getall()
+    timestamp = parsed_content.css(
+        f"{MAPPED_FIELDS['timestamp_original']}::text"
+    ).get()
+
+    if not timestamp:
+        timestamp = parsed_content.css(
+            f"{MAPPED_FIELDS['timestamp_modified']}::text"
+        ).get()
+
+    formatted_timestamp = datetime.strptime(timestamp, "%d/%m/%Y")
+    formatted_timestamp = formatted_timestamp.strftime("%d/%m/%Y")
+
+    return {
+        "url": url,
+        "title": title.strip(),
+        "timestamp": formatted_timestamp,
+        "writer": writer,
+        "comments_count": len(comments_count),
+        "summary": "".join(summary).strip(),
+        "tags": tags,
+        "category": category,
+    }
 
 
 # Requisito 5
