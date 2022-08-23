@@ -1,7 +1,8 @@
 import requests
 
-from typing import Union
+from typing import List, Union
 from time import sleep
+from parsel import Selector
 
 
 # Requisito 1
@@ -13,8 +14,8 @@ def fetch(url: str) -> Union[str, None]:
 
         if response.status_code == 200:
             return response.text
-        else:
-            return None
+
+        return None
     except Exception as e:
         print(e)
         return None
@@ -23,8 +24,14 @@ def fetch(url: str) -> Union[str, None]:
 
 
 # Requisito 2
-def scrape_novidades(html_content):
-    """Seu código deve vir aqui"""
+def scrape_novidades(html_content: str) -> List[str]:
+    parsed_content = Selector(text=html_content)
+    links = parsed_content.css("a.cs-overlay-link::attr(href)").getall()
+
+    if len(links) > 0:
+        return links
+
+    return []
 
 
 # Requisito 3
