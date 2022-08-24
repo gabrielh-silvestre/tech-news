@@ -17,9 +17,7 @@ def search_builder(condition: Callable) -> List[Tuple[str, str]]:
 
 # Requisito 6
 def search_by_title(title: str) -> List[Tuple[str, str]]:
-    search_condition = lambda news: title.lower() in news["title"].lower()
-
-    return search_builder(search_condition)
+    return search_builder(lambda news: title.lower() in news["title"].lower())
 
 
 # Requisito 7
@@ -31,26 +29,21 @@ def search_by_date(date: str) -> List[Tuple[str, str]]:
     except ValueError:
         raise ValueError("Data inválida")
 
-    search_condition = lambda news: formatted_date == datetime.strptime(
-        news["timestamp"], "%d/%m/%Y"
+    return search_builder(
+        lambda news: formatted_date
+        == datetime.strptime(news["timestamp"], "%d/%m/%Y")
     )
-
-    return search_builder(search_condition)
 
 
 # Requisito 8
 def search_by_tag(tag: str) -> List[Tuple[str, str]]:
-    search_condition = lambda news: tag.lower() in [
-        t.lower() for t in news["tags"]
-    ]
-
-    return search_builder(search_condition)
+    return search_builder(
+        lambda news: tag.lower() in [t.lower() for t in news["tags"]]
+    )
 
 
 # Requisito 9
 def search_by_category(category: str) -> List[Tuple[str, str]]:
-    search_condition = (
+    return search_builder(
         lambda news: category.lower() == news["category"].lower()
     )
-
-    return search_builder(search_condition)
