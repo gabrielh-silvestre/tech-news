@@ -1,9 +1,11 @@
 import requests
 
-from typing import List, Union
+from typing import Dict, List, Union
 from time import sleep
 from parsel import Selector
 from datetime import datetime
+
+from tech_news.database import create_news
 
 
 def select_links(
@@ -98,6 +100,31 @@ def scrape_noticia(html_content: str):
     }
 
 
+def get_page_content(page_url: str, amount: int) -> Dict:
+    page = fetch(page_url)
+    news_links = scrape_novidades(page)
+    next_page = scrape_next_page_link(page)
+
+    news_limit = min(amount, len(news_links))
+    news = []
+
+    for news_number in range(news_limit):
+        page_news = fetch(news_links[news_number])
+        news.append(scrape_noticia(page_news))
+
+    return {"news": news, "next_page": next_page}
+
+
 # Requisito 5
-def get_tech_news(amount):
-    """Seu código deve vir aqui"""
+def get_tech_news(amount: int) -> List[Dict]:
+    URL = "https://blog.betrybe.com"
+
+    news = []
+
+    while len(news) < amount:
+        content = get_page_content(URL, amount - len(news))
+        news.extend(content["news"])
+        URL = content["next_page"]
+
+    create_news(news)
+    return news
