@@ -17,5 +17,19 @@ def top_5_news() -> List[Tuple[str, int]]:
 
 
 # Requisito 11
-def top_5_categories():
-    """Seu código deve vir aqui"""
+def top_5_categories() -> List[str]:
+    found_news: Dict[str, Any] = find_news()
+    categories = [news["category"] for news in found_news]
+
+    # two keys sort ref
+    # https://theprogrammingexpert.com/python-sort-by-two-keys/
+    most_categories = sorted(
+        set(categories),
+        key=lambda category: (-categories.count(category), category),
+    )
+
+    return most_categories[:5]
+
+
+if __name__ == "__main__":
+    top_5_categories()
