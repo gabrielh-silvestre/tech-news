@@ -6,18 +6,18 @@ from tech_news.database import find_news
 
 # Requisito 6
 def search_by_title(title: str) -> List[Tuple[str, str]]:
-    news: Dict[str, Any] = find_news()
+    found_news: Dict[str, Any] = find_news()
 
     return [
         (news["title"], news["url"])
-        for news in news
+        for news in found_news
         if title.lower() in news["title"].lower()
     ]
 
 
 # Requisito 7
 def search_by_date(date: str) -> List[Tuple[str, str]]:
-    news: Dict[str, Any] = find_news()
+    found_news: Dict[str, Any] = find_news()
     formatted_date = None
 
     try:
@@ -27,7 +27,7 @@ def search_by_date(date: str) -> List[Tuple[str, str]]:
 
     return [
         (news["title"], news["url"])
-        for news in news
+        for news in found_news
         if formatted_date == datetime.strptime(news["timestamp"], "%d/%m/%Y")
     ]
 
@@ -44,5 +44,11 @@ def search_by_tag(tag: str) -> List[Tuple[str, str]]:
 
 
 # Requisito 9
-def search_by_category(category):
-    """Seu código deve vir aqui"""
+def search_by_category(category: str) -> List[Tuple[str, str]]:
+    found_news: Dict[str, Any] = find_news()
+
+    return [
+        (news["title"], news["url"])
+        for news in found_news
+        if category.lower() in news["category"].lower()
+    ]
