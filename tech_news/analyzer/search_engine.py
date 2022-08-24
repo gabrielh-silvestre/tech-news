@@ -33,8 +33,14 @@ def search_by_date(date: str) -> List[Tuple[str, str]]:
 
 
 # Requisito 8
-def search_by_tag(tag):
-    """Seu código deve vir aqui"""
+def search_by_tag(tag: str) -> List[Tuple[str, str]]:
+    found_news: Dict[str, Any] = find_news()
+
+    return [
+        (news["title"], news["url"])
+        for news in found_news
+        if tag.lower() in [tag.lower() for tag in news["tags"]]
+    ]
 
 
 # Requisito 9
