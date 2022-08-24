@@ -29,7 +29,3 @@ def top_5_categories() -> List[str]:
     )
 
     return most_categories[:5]
-
-
-if __name__ == "__main__":
-    top_5_categories()
